@@ -51,8 +51,14 @@ wpd.isUserLoggedIn = function() {
     });
 }
 
-// check if user is logged in on-load
-if (!wpd.isOffline() && !wpd.isLocalhost()) {
+// OpenDigitizer: only the hosted cloud build enforces login. Self-hosted static
+// deployments (e.g. GitHub Pages) and local/offline use never redirect to /login.
+wpd.isCloud = function() {
+    return typeof window !== "undefined" && window.wpdAppMode === "cloud";
+};
+
+// check if user is logged in on-load (cloud deployment only)
+if (wpd.isCloud() && !wpd.isOffline() && !wpd.isLocalhost()) {
     wpd.isUserLoggedIn().then(() => {
         console.log("logged in");
     }, (err) => {
@@ -83,7 +89,8 @@ wpd.getQuotaLimits = function() {
 
 wpd.cloudNewImage = function() {
     return new Promise((resolve, reject) => {
-        if (wpd.isOffline()) {
+        // OpenDigitizer: no quota backend outside the cloud build — skip the ping
+        if (wpd.isOffline() || !wpd.isCloud()) {
             resolve();
             return;
         }

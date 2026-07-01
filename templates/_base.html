@@ -30,6 +30,8 @@
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="-1" />
     <title>OpenDigitizer - open fork of WebPlotDigitizer (based on work © 2010-2025 Ankit Rohatgi)</title>
+    <!-- OpenDigitizer: expose the build's app_mode to JS (used to gate cloud/login behavior) -->
+    <script>window.wpdAppMode = "{{ app_mode }}";</script>
     <link rel="stylesheet" href="node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="styles/styles.css" type="text/css" media="screen" />
     <link rel="stylesheet" href="styles/widgets.css" type="text/css" media="screen" />
