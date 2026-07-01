@@ -1,0 +1,15 @@
+/* OpenDigitizer theme: teal/slate accent (distinct from upstream orange/gold) */
+:root {
+    --wpd-widget-hover-color: #d6f1ee;
+    --wpd-widget-active-color: #14b8a6;
+    --wpd-dialog-title-background: #0f766e;
+    --wpd-dialog-title-text-color: #ffffff;
+    --wpd-button-background: #eef2f4;
+    --wpd-font-family: ui-sans-serif, system-ui, sans-serif;
+    --wpd-font-size: 14px;
+
+    /* OpenDigitizer brand accents */
+    --od-brand-color: #0f766e;
+    --od-brand-accent: #14b8a6;
+    --od-topbar-background: #f4faf9;
+}
