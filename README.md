@@ -1,99 +1,104 @@
 # OpenDigitizer
 
-**OpenDigitizer is an open fork of [WebPlotDigitizer](https://github.com/automeris-io/WebPlotDigitizer) (v5.3.0) by Ankit Rohatgi.**
-It keeps the entire frontend open (AGPL-3.0) and adds an **open, pluggable
-computer-vision / AI extraction layer** plus several manual-mode usability
-improvements. It is not affiliated with or endorsed by Automeris LLC.
+**OpenDigitizer** is a browser-based tool for extracting numerical data from
+images of charts and plots — with an **open, pluggable computer-vision / AI
+extraction layer** and a **keyboard-first digitizing workflow**.
 
-> Upstream WebPlotDigitizer's "AI Assist" is a closed cloud service. OpenDigitizer
-> instead exposes a documented detector contract so anyone can plug in their own
-> CV/AI — in pure JS, in-browser WASM, or a self-hosted Python service. See
-> [`docs/EXTENDING-CV-AI.md`](docs/EXTENDING-CV-AI.md).
+![OpenDigitizer](images/opendigitizer.png)
 
-## What this fork adds
+*Above: OpenDigitizer auto-extracting a curve (red points) from a plot image.*
 
-- **Multiple selection & deletion (manual mode).** The *Adjust* tool now deletes
-  *all* selected points at once (tuple/point-group safe), and supports
-  additive/toggle selection with Shift/Ctrl-click and Shift-drag.
-- **Point-level Undo / Redo.** Snapshot-based undo for add/delete/clear, via
-  Ctrl/Cmd+Z and Ctrl/Cmd+Y (or the new sidebar buttons). Upstream only had undo
-  for image crop.
-- **Keyboard placement mode (`K`).** Toggle with the `K` key or the sidebar
-  button: move a crosshair with the arrow keys (Shift = faster), press **`A`** to
-  add a point at the crosshair, and jump between existing points with **`Z`**
-  (previous) / **`C`** (next). The magnified view and live coordinate readout
-  follow the crosshair.
-- **Folder / thumbnail browser.** "Open Folder" loads every image in a folder as
-  a multi-file session and shows a thumbnail strip; hovering a thumbnail shows a
-  large preview, clicking switches to it.
-- **Pluggable detector registry (`wpd.detectorRegistry`).** New CV/AI detectors
-  register themselves and appear in the *Automatic Extraction → Algorithm*
-  dropdown next to the built-ins. Ships with a worked JS example
-  (`exampleColumnDetector.js`) and a ready-to-use remote-HTTP adapter
-  (`wpd.RemoteDetector`) for Python backends.
-
-### Quick start (no build needed)
-
-Open `dev.html` in a browser — it loads the individual JS files directly. For a
-production/minified page, run `npm install && npm run build` and open `index.html`.
-
-See [`CHANGES-OpenDigitizer.md`](CHANGES-OpenDigitizer.md) for the full list of
-files touched.
+> Open fork of [WebPlotDigitizer](https://github.com/automeris-io/WebPlotDigitizer) by Ankit Rohatgi.
+> Distributed under **AGPL-3.0**. Independent project — not affiliated with or endorsed by Automeris LLC.
 
 ---
 
-## Upstream WebPlotDigitizer
+## Highlights
 
-A large quantity of useful data is locked away in images of data visualizations. WebPlotDigitizer is a computer vision assisted software that helps extract numerical data from images of a variety of data visualizations.
+- **Open CV/AI extraction seam.** New detectors register themselves and show up in
+  the *Automatic Extraction → Algorithm* dropdown. Run detection in **pure JS**,
+  **in-browser WASM** (e.g. ONNX Runtime / TensorFlow.js), or your **own remote
+  Python service** — no closed cloud dependency. See
+  [`docs/EXTENDING-CV-AI.md`](docs/EXTENDING-CV-AI.md).
+- **Keyboard-first digitizing.** Press **`K`**, then: arrow keys move a crosshair
+  (**Shift** = faster), **`A`** add, **`D`** delete, **`S`** grab & move a point,
+  **`Z`/`C`** jump to the previous/next point. The magnifier and live coordinate
+  readout follow the crosshair.
+- **Multi-select & one-shot delete** with additive selection (Shift/Ctrl-click,
+  Shift-drag), plus **point-level Undo/Redo** (`Ctrl+Z` / `Ctrl+Y`).
+- **Folder / thumbnail browser.** Open a whole folder of images; hover a thumbnail
+  for a large preview, click to switch.
+- **Flexible masking.** Freehand **Pen/Erase**, a **keyboard brush** (`K`), and
+  click-to-click **Polygon (PolyG)** fill and **Polyline (PolyL)** stroke masks,
+  with numeric brush width.
+- **Distinct OpenDigitizer theme.**
 
-WPD has been used by thousands in academia and industry since its creation in 2010 (Google Scholar Citations)
+## Core capabilities
 
-To use WPD, sign-up on https://automeris.io
+- Chart/axis types: **XY, polar, ternary, bar, map, image, circular chart recorder**.
+- **Manual** and **automatic** (color-mask + algorithm) extraction.
+- **Measurements**: distance, angle, area/perimeter.
+- **Export**: CSV, clipboard, Plotly; **save/resume** projects.
 
-![WPD Screenshot](images/wpd5.png "WebPlotDigitizer UI")
+## Keyboard placement mode
 
-## Donate
+![Keyboard mode](images/opendigitizer-keyboard.png)
 
-Donatations help keeping WPD free for thousands of scientists and researchers across the world.
+Toggle with **`K`** (or the sidebar button). The crosshair is the only cursor
+while active (the mouse is disabled), so the whole workflow is keyboard-driven:
 
-<a href='https://ko-fi.com/L4L010CWIY' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+| Key | Action |
+|---|---|
+| ← ↑ ↓ → | move crosshair (hold **Shift** to move faster) |
+| **A** | add a point at the crosshair |
+| **D** | delete the point at the crosshair |
+| **S** | grab the nearest point, then arrows move it (press **S** to release) |
+| **Z** / **C** | jump to previous / next point |
+| **K** | exit keyboard mode |
 
-## Documentation
+## Quick start
 
-Visit: https://automeris.io/docs/
+**No build (development):** serve the folder and open `dev.html`, which loads the
+JavaScript directly.
+
+```bash
+python3 -m http.server 8080     # run from this folder
+# open http://localhost:8080/dev.html
+```
+
+**Production build** (minified `wpd.min.js` + rendered HTML):
+
+```bash
+npm install
+npm run build     # requires python3 with jinja2 + babel for HTML rendering
+npm start         # host locally, then open index.html
+```
+
+**Docker:**
+
+```bash
+docker compose up --build       # install deps, build, and host on :8080
+```
+
+## Extending with your own CV / AI
+
+Detectors implement a small interface and register with `wpd.detectorRegistry`;
+they then appear alongside the built-in algorithms. The repo ships a worked
+local-JS example ([`exampleColumnDetector.js`](javascript/core/curve_detection/exampleColumnDetector.js))
+and a ready-to-use remote-HTTP adapter (`wpd.RemoteDetector`) with a reference
+FastAPI server. Full contract and recipes (JS / WASM / Python):
+[`docs/EXTENDING-CV-AI.md`](docs/EXTENDING-CV-AI.md).
+
+## Contributing
+
+Issues and pull requests are welcome. See
+[`CHANGES-OpenDigitizer.md`](CHANGES-OpenDigitizer.md) for what this fork changed
+relative to upstream, and [`CONTRIBUTING.md`](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-WPD frontend is distributed under GNU AGPL v3 license (this repository). 
+OpenDigitizer is distributed under the **GNU Affero General Public License v3.0**
+([`LICENSE`](LICENSE)).
 
-Automeris "AI Assist" and other related cloud based systems are closed source and owned by Automeris LLC (owned by Ankit Rohatgi).
-
-## Contact
-
-Primary Author and Maintainer: Ankit Rohatgi
-
-Email: plots@automeris.io
-
-## Contributions
-
-WPD does not have an official roadmap. Please consult before submitting contributions.
-
-
-## Local build (for development)
-
-With Docker:
-```
-docker compose up --build               # install depedencies, build and host
-docker compose run wpd npm run build    # rebuild
-docker compose run wpd npm run format   # autoformat code
-http://localhost:8080/tests             # run tests
-```
-
-Without Docker:
-```
-npm install     # install dependencies
-npm run build   # build artifacts
-npm start       # host locally
-npm run format  # autoformat code
-npm run test    # run tests
-```
+It is a fork of **WebPlotDigitizer**; original work © 2010–2025 Ankit Rohatgi /
+Automeris LLC. All original copyright and license notices are retained.
